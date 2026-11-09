@@ -15,11 +15,12 @@ $(foreach name, $(_additional_prop_var_names),\
 )
 _additional_prop_var_names :=
 
-# Max out numeric values at 32. Defaults to 32 on bad input.
-clamp32 = $(shell v="$(strip $(1))"; \
+# Max out numeric values at 32 when SPOOF_FIRST_API_LEVEL_32 is true. Defaults to 32 on bad
+# input in that case; otherwise the value is used as it is.
+clamp32 = $(if $(filter true,$(SPOOF_FIRST_API_LEVEL_32)),$(shell v="$(strip $(1))"; \
   if echo "$$v " | grep -Eq '^[0-9]+ $$'; then \
     if [ "$$v" -gt 32 ]; then echo 32; else echo $$v; fi; \
-  else echo 32; fi)
+  else echo 32; fi),$(strip $(1)))
 
 $(KATI_obsolete_var ADDITIONAL_SYSTEM_PROPERTIES,Use build/soong/scripts/gen_build_prop.py instead)
 $(KATI_obsolete_var ADDITIONAL_ODM_PROPERTIES,Use build/soong/scripts/gen_build_prop.py instead)
